@@ -745,6 +745,12 @@ export function createComputerTools({ runPs, getConfig, approvedSessions, sessio
     computerSetMode,
   ];
 
+  // Normalize array descriptions to plain strings BEFORE any filtering:
+  // some model providers reject an array-valued tool description.
+  for (const tool of tools) {
+    if (Array.isArray(tool.description)) tool.description = tool.description.join(' ');
+  }
+
   // tool_mode: all (default) | lite | custom (enabled_tools allow-list).
   const cfgNow = getConfig();
   const mode = String(cfgNow.tool_mode || 'all');
@@ -756,12 +762,5 @@ export function createComputerTools({ runPs, getConfig, approvedSessions, sessio
     if (allow) return tools.filter((t) => allow.has(t.name));
   }
   return tools;
-
-  for (const tool of tools) {
-    if (Array.isArray(tool.description)) tool.description = tool.description.join(' ');
-  }
-
-  return tools;
-}
 
 export default createComputerTools;
